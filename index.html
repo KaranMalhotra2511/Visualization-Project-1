@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mini Project 1</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <script src="src/histogram.js"></script>
+    <script src="src/piechart.js"></script>
+    <script src="src/binWidthModify.js"></script>
+
+  </head>
+  <body>
+    <center>
+    <button class="w3-btn" onclick="cycleVariables()" type="button">Change Data Column</button>
+    <button id = "binWidthUpdate" class="w3-btn" style="color:white" type="button">Drag on me to change the number of bins</button>
+    <div id = "bar"></div>
+    <div id = "chart"></div>
+    <div id = "graphName"></div>
+    
+    <script type="text/javascript">
+
+      var w = 500;
+      var h = 500;
+
+      var currFigure = 0;
+      var binWidth = 5;
+
+      var array1 = [];
+      var array2 = [];
+      var array3 = [];
+      var array4 = [];
+
+      var arr = ["Income","Cons","Price","Temp"];
+
+      d3.csv("data/Icecream.csv", function(data) {
+        data.forEach(function(d) {
+         array1.push((+d.income));
+         array2.push(+d.cons);
+         array3.push(+d.price);
+         array4.push(+d.temp);
+        })
+      });
+      
+      var currColumn = 0;
+      function cycleVariables(){
+        if(currColumn%4 == 0) refillDataHistogram(array1,binWidth);
+        if(currColumn%4 == 1) refillDataHistogram(array2,binWidth);
+        if(currColumn%4 == 2) refillDataHistogram(array3,binWidth);
+        if(currColumn%4 == 3) refillDataHistogram(array4,binWidth);
+        currColumn = currColumn%4 + 1;
+      }
+      
+      function refillDataHistogram(array, bin){
+        var widthBin = (d3.max(array) - d3.min(array))/bin;
+        document.getElementById("graphName").innerHTML = arr[currColumn===4 ? 0 : currColumn];
+        
+        dataS = new Array(bin+2).join('0').split('');
+        array.forEach(function(d){
+          dataS[Math.floor((d - d3.min(array))/widthBin)]++;
+        })
+        
+        if(currFigure == 0){
+          document.getElementById("bar").innerHTML = '';
+          createHistogram(dataS);  
+        }
+        else{
+          document.getElementById("chart").innerHTML = '';
+          createPieChart(dataS);
+        }
+        
+      }
+
+      activateBinWidth();
+          
+    </script>
+    </center>
+  </body>
+</html>
